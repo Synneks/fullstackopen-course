@@ -16,12 +16,19 @@ const FeedbackButton = ({ vote, text }) => {
 };
 
 const Statistics = ({ votes }) => {
+    const votesAmount = votes.good + votes.neutral + votes.bad;
+    const average = (votes.good - votes.bad) / votesAmount;
+    const positives = (votes.good / votesAmount) * 100;
+
     return (
         <>
             <h1>Statistics</h1>
             <p>good {votes.good}</p>
             <p>neutral {votes.neutral}</p>
             <p>bad {votes.bad}</p>
+            <p>total: {votesAmount}</p>
+            <p>average: {average}</p>
+            <p>positive: {positives}</p>
         </>
     );
 };
