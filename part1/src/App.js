@@ -2,10 +2,10 @@ import { useState } from "react";
 
 const getDifferentRandomNumber = (current, length) => {
     const newRandomNumber = Math.floor(Math.random() * length);
-    if (current === newRandomNumber) {
-        getDifferentRandomNumber(current, length);
+    if (current !== newRandomNumber) {
+        return newRandomNumber;
     }
-    return newRandomNumber;
+    return getDifferentRandomNumber(current, length);
 };
 
 const App = () => {
@@ -29,6 +29,12 @@ const App = () => {
         setVotes(arr);
     };
 
+    const mostVotes = () => {
+        const highestVote = votes.reduce((a, b) => (a > b ? a : b));
+        const indexOfHighestVote = votes.indexOf(highestVote);
+        return { anecdote: anecdotes[indexOfHighestVote], votes: highestVote };
+    };
+
     return (
         <div>
             <div style={{ height: 50 }}>
@@ -45,6 +51,11 @@ const App = () => {
                 Next
             </button>
             <button onClick={() => vote()}>Like</button>
+            <h1>Anecdote with most votes</h1>
+            <div>
+                <p>{mostVotes().anecdote}</p>{" "}
+                <p>with {mostVotes().votes} votes</p>
+            </div>
         </div>
     );
 };
