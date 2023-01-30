@@ -20,6 +20,14 @@ const Statistics = ({ votes }) => {
     const average = (votes.good - votes.bad) / votesAmount;
     const positives = (votes.good / votesAmount) * 100;
 
+    if (!votesAmount) {
+        return (
+            <>
+                <p>No feedback given</p>
+            </>
+        );
+    }
+
     return (
         <>
             <h1>Statistics</h1>
