@@ -1,58 +1,57 @@
-const Header = (props) => {
-    return <h1>{props.course}</h1>;
-};
+import { useState } from "react";
 
-const Part = (props) => {
-    return (
-        <p>
-            {props.part.name} {props.part.exercises}
-        </p>
-    );
-};
-
-const Content = (props) => {
+const Feedback = ({ handleGood, handleNeutral, handleBad }) => {
     return (
         <>
-            <Part part={props.parts[0]} />
-            <Part part={props.parts[1]} />
-            <Part part={props.parts[2]} />
+            <h1>Give Feedback</h1>
+            <FeedbackButton vote={handleGood} text="good" />
+            <FeedbackButton vote={handleNeutral} text="neutral" />
+            <FeedbackButton vote={handleBad} text="bad" />
         </>
     );
 };
 
-const Total = (props) => {
+const FeedbackButton = ({ vote, text }) => {
+    return <button onClick={vote}>{text}</button>;
+};
+
+const Statistics = ({ votes }) => {
     return (
-        <p>
-            Number of exercises:{" "}
-            {props.exercises[0] + props.exercises[1] + props.exercises[2]}
-        </p>
+        <>
+            <h1>Statistics</h1>
+            <p>good {votes.good}</p>
+            <p>neutral {votes.neutral}</p>
+            <p>bad {votes.bad}</p>
+        </>
     );
 };
 
 const App = () => {
-    const course = {
-        name: "Half Stack application development",
-        parts: [
-            {
-                name: "Fundamentals of React",
-                exercises: 10,
-            },
-            {
-                name: "Using props to pass data",
-                exercises: 7,
-            },
-            {
-                name: "State of a component",
-                exercises: 14,
-            },
-        ],
+    // save clicks of each button to its own state
+    const [good, setGood] = useState(0);
+    const [neutral, setNeutral] = useState(0);
+    const [bad, setBad] = useState(0);
+
+    const handleGood = () => {
+        setGood(good + 1);
+    };
+
+    const handleNeutral = () => {
+        setNeutral(neutral + 1);
+    };
+
+    const handleBad = () => {
+        setBad(bad + 1);
     };
 
     return (
         <div>
-            <Header course={course.name} />
-            <Content parts={course.parts} />
-            <Total exercises={course.parts.map((part) => part.exercises)} />
+            <Feedback
+                handleGood={handleGood}
+                handleNeutral={handleNeutral}
+                handleBad={handleBad}
+            />
+            <Statistics votes={{ good, neutral, bad }} />
         </div>
     );
 };
