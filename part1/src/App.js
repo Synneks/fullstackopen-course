@@ -21,12 +21,20 @@ const App = () => {
     ];
 
     const [selected, setSelected] = useState(0);
+    const [votes, setVotes] = useState(Array(anecdotes.length).fill(0));
+
+    const vote = () => {
+        const arr = [...votes];
+        arr[selected] += 1;
+        setVotes(arr);
+    };
 
     return (
         <div>
             <div style={{ height: 50 }}>
                 <p>{anecdotes[selected]}</p>
             </div>
+            <p>has {votes[selected]} votes</p>
             <button
                 onClick={() =>
                     setSelected(
@@ -36,6 +44,7 @@ const App = () => {
             >
                 Next
             </button>
+            <button onClick={() => vote()}>Like</button>
         </div>
     );
 };
