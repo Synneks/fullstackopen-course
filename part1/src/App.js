@@ -31,23 +31,24 @@ const Statistics = ({ votes }) => {
     return (
         <>
             <h1>Statistics</h1>
-            <StatisticsLine text="good" value={votes.good} />
-            <StatisticsLine text="neutral" value={votes.neutral} />
-            <StatisticsLine text="bad" value={votes.bad} />
-            <StatisticsLine text="total" value={votesAmount} />
-            <StatisticsLine text="average" value={average} />
-            <StatisticsLine text="positive" value={positives} />
+            <table>
+                <StatisticsLine text="good" value={votes.good} />
+                <StatisticsLine text="neutral" value={votes.neutral} />
+                <StatisticsLine text="bad" value={votes.bad} />
+                <StatisticsLine text="total" value={votesAmount} />
+                <StatisticsLine text="average" value={average} />
+                <StatisticsLine text="positive" value={positives} />
+            </table>
         </>
     );
 };
 
 const StatisticsLine = ({ text, value }) => {
     return (
-        <>
-            <p>
-                {text} {value}
-            </p>
-        </>
+        <tr>
+            <td>{text}</td>
+            <td>{value}</td>
+        </tr>
     );
 };
 
