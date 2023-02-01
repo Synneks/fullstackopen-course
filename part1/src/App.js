@@ -23,7 +23,7 @@ const App = () => {
         ],
     };
 
-    return <Course id={course.id} course={course} />;
+    return <Course course={course} />;
 };
 
 export default App;
