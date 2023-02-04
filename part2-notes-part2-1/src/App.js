@@ -2,10 +2,14 @@ import { useState } from "react";
 
 const App = () => {
   const [persons, setPersons] = useState([
-    { name: "Arto Hellas", number: "123" },
+    { name: "Arto Hellas", number: "040-123456", id: 1 },
+    { name: "Ada Lovelace", number: "39-44-5323523", id: 2 },
+    { name: "Dan Abramov", number: "12-43-234345", id: 3 },
+    { name: "Mary Poppendieck", number: "39-23-6423122", id: 4 },
   ]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
+  const [filteredList, setFilteredList] = new useState(persons);
 
   const handleNameInput = (e) => {
     setNewName(e.target.value);
@@ -23,10 +27,29 @@ const App = () => {
     if (persons.find((person) => person.name === newName)) {
       return alert(`${newName} has already been added`);
     }
-    const newPerson = { name: newName, number: newNumber };
+    const newPerson = {
+      name: newName,
+      number: newNumber,
+      id: persons.length + 1,
+    };
     setPersons(persons.concat(newPerson));
     setNewName("");
     setNewNumber("");
+  };
+
+  const handleSearch = (e) => {
+    const searchTerm = e.target.value;
+
+    const personsCopy = [
+      ...persons.filter(
+        (person) => person.name.toLowerCase().indexOf(searchTerm) !== -1
+      ),
+    ];
+    console.log(
+      "🚀 ~ file: App.js:49 ~ handleSearch ~ personsCopy",
+      personsCopy
+    );
+    setFilteredList(personsCopy);
   };
 
   return (
@@ -49,9 +72,10 @@ const App = () => {
         </div>
       </form>
       <h2>Numbers</h2>
+      search: <input name="searchNumbers" onChange={handleSearch} />
       <ul>
-        {persons.map((person) => (
-          <li key={person.name}>
+        {filteredList.map((person) => (
+          <li key={person.id}>
             {person.name} - {person.number}
           </li>
         ))}
