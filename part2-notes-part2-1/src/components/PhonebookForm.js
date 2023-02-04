@@ -24,8 +24,10 @@ export const PhonebookForm = ({ persons, setPersons, setFilteredList }) => {
       number: newNumber,
       id: persons.length + 1,
     };
-    setPersons(persons.concat(newPerson));
-    setFilteredList([...persons]);
+
+    const newPersons = persons.concat(newPerson);
+    setPersons(newPersons);
+    setFilteredList(newPersons);
     setNewName("");
     setNewNumber("");
   };
