@@ -9,10 +9,6 @@ const Search = ({ persons, setFilteredList }) => {
         (person) => person.name.toLowerCase().indexOf(searchTerm) !== -1
       ),
     ];
-    console.log(
-      "🚀 ~ file: App.js:49 ~ handleSearch ~ personsCopy",
-      personsCopy
-    );
     setFilteredList(personsCopy);
   };
   return (

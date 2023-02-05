@@ -3,12 +3,15 @@ import { useState } from "react";
 export const PhonebookForm = ({ persons, setPersons, setFilteredList }) => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
+
   const handleNameInput = (e) => {
     setNewName(e.target.value);
   };
+
   const handleNumberInput = (e) => {
     setNewNumber(e.target.value);
   };
+
   const addToPhonebook = (e) => {
     e.preventDefault();
     if (!newName || !newNumber) {
@@ -16,9 +19,11 @@ export const PhonebookForm = ({ persons, setPersons, setFilteredList }) => {
       !newNumber && setNewNumber("");
       return alert("Both fields are mandatory.");
     }
+
     if (persons.find((person) => person.name === newName)) {
       return alert(`${newName} has already been added`);
     }
+
     const newPerson = {
       name: newName,
       number: newNumber,
