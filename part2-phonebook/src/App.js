@@ -27,6 +27,8 @@ const App = () => {
       <h2>Contacts</h2>
       <Search contacts={contacts} setFilteredList={setFilteredList} />
       <ContactList
+        contacts={contacts}
+        setContacts={setContacts}
         filteredList={filteredList}
         setFilteredList={setFilteredList}
       />

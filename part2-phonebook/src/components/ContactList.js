@@ -1,7 +1,12 @@
 import React from "react";
 import contactsService from "../services/contacts";
 
-const ContactList = ({ filteredList, setFilteredList }) => {
+const ContactList = ({
+  filteredList,
+  setFilteredList,
+  contacts,
+  setContacts,
+}) => {
   const deleteContact = (e, contactId, contactName) => {
     e.preventDefault();
     if (!window.confirm(`You sure you wanna delete contact ${contactName}`)) {
@@ -9,9 +14,10 @@ const ContactList = ({ filteredList, setFilteredList }) => {
     }
     contactsService
       .deleteContact(contactId)
-      .then(() =>
-        setFilteredList(filteredList.filter((el) => el.id !== contactId))
-      )
+      .then(() => {
+        setContacts(contacts.filter((el) => el.id !== contactId));
+        setFilteredList(filteredList.filter((el) => el.id !== contactId));
+      })
       .catch(() => alert(`Something went wrong when deleting ${contactName}`));
   };
 
