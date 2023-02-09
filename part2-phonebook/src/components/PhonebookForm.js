@@ -1,4 +1,6 @@
 import { useState } from "react";
+import axios from "redaxios";
+import { BASE_URL } from "../App";
 
 export const PhonebookForm = ({ contacts, setContacts, setFilteredList }) => {
   const [newName, setNewName] = useState("");
@@ -27,14 +29,15 @@ export const PhonebookForm = ({ contacts, setContacts, setFilteredList }) => {
     const newContact = {
       name: newName,
       number: newNumber,
-      id: contacts.length + 1,
     };
 
-    const newContacts = contacts.concat(newContact);
-    setContacts(newContacts);
-    setFilteredList(newContacts);
-    setNewName("");
-    setNewNumber("");
+    axios.post(BASE_URL, newContact).then((res) => {
+      const updatedContacts = contacts.concat(res.data);
+      setContacts(updatedContacts);
+      setFilteredList(updatedContacts);
+      setNewName("");
+      setNewNumber("");
+    });
   };
 
   return (

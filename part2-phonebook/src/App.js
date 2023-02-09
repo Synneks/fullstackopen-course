@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import axios from "redaxios";
-import BASE_URL from ".";
 import ContactList from "./components/ContactList";
 import { PhonebookForm } from "./components/PhonebookForm";
 import Search from "./components/Search";
+
+export const BASE_URL = "http://localhost:3001/contacts";
 
 const App = () => {
   const [contacts, setContacts] = useState([]);
