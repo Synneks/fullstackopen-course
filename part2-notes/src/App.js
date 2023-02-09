@@ -36,9 +36,6 @@ const App = () => {
 
   const toggleImportanceOf = (id) => {
     const note = notes.find((n) => n["id"] === id);
-    if (!note) {
-      return;
-    }
 
     const updatedNote = { ...note, important: !note["important"] };
 
@@ -46,7 +43,11 @@ const App = () => {
       .update(id, updatedNote)
       .then((updatedNote) =>
         setNotes(notes.map((n) => (n["id"] !== id ? n : updatedNote)))
-      );
+      )
+      .catch((err) => {
+        alert(`the note "${note.content}" does not exist on the server`);
+        setNotes(notes.filter((n) => n["id"] !== id));
+      });
   };
 
   return (
