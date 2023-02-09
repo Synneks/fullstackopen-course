@@ -1,16 +1,17 @@
 import { useState, useEffect } from "react";
 import axios from "redaxios";
-import Persons from "./components/Persons";
+import BASE_URL from ".";
+import ContactList from "./components/ContactList";
 import { PhonebookForm } from "./components/PhonebookForm";
 import Search from "./components/Search";
 
 const App = () => {
-  const [persons, setPersons] = useState([]);
-  const [filteredList, setFilteredList] = useState(persons);
+  const [contacts, setContacts] = useState([]);
+  const [filteredList, setFilteredList] = useState(contacts);
 
   useEffect(() => {
-    axios.get("http://localhost:3001/persons").then((res) => {
-      setPersons(res.data);
+    axios.get(BASE_URL).then((res) => {
+      setContacts(res.data);
       setFilteredList(res.data);
     });
   }, []);
@@ -19,13 +20,13 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
       <PhonebookForm
-        persons={persons}
-        setPersons={setPersons}
+        contacts={contacts}
+        setContacts={setContacts}
         setFilteredList={setFilteredList}
       />
-      <h2>Numbers</h2>
-      <Search persons={persons} setFilteredList={setFilteredList} />
-      <Persons filteredList={filteredList} />
+      <h2>Contacts</h2>
+      <Search contacts={contacts} setFilteredList={setFilteredList} />
+      <ContactList filteredList={filteredList} />
     </div>
   );
 };

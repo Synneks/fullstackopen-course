@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export const PhonebookForm = ({ persons, setPersons, setFilteredList }) => {
+export const PhonebookForm = ({ contacts, setContacts, setFilteredList }) => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
 
@@ -20,19 +20,19 @@ export const PhonebookForm = ({ persons, setPersons, setFilteredList }) => {
       return alert("Both fields are mandatory.");
     }
 
-    if (persons.find((person) => person.name === newName)) {
+    if (contacts.find((contact) => contact.name === newName)) {
       return alert(`${newName} has already been added`);
     }
 
-    const newPerson = {
+    const newContact = {
       name: newName,
       number: newNumber,
-      id: persons.length + 1,
+      id: contacts.length + 1,
     };
 
-    const newPersons = persons.concat(newPerson);
-    setPersons(newPersons);
-    setFilteredList(newPersons);
+    const newContacts = contacts.concat(newContact);
+    setContacts(newContacts);
+    setFilteredList(newContacts);
     setNewName("");
     setNewNumber("");
   };
