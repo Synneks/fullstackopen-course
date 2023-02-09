@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
-import axios from "redaxios";
+import noteService from "./services/notes";
 import Note from "./components/Note";
-
-export const BASE_URL = "http://localhost:3001";
 
 const App = () => {
   const [notes, setNotes] = useState([]);
@@ -10,8 +8,8 @@ const App = () => {
   const [showAll, setShowAll] = useState(true);
 
   useEffect(() => {
-    axios.get(BASE_URL + "/notes").then((response) => {
-      setNotes(response.data);
+    noteService.getAll().then((notesInDb) => {
+      setNotes(notesInDb);
     });
   }, []);
 
@@ -22,9 +20,8 @@ const App = () => {
       important: Math.random() > 0.5,
     };
 
-    axios.post(BASE_URL + "/notes", noteObject).then((res) => {
-      console.log(res);
-      setNotes(notes.concat(res.data));
+    noteService.create(noteObject).then((savedNote) => {
+      setNotes(notes.concat(savedNote));
       setNewNote("");
     });
   };
@@ -33,11 +30,24 @@ const App = () => {
     setNewNote(event.target.value);
   };
 
-  const isNoteImportant = (note) => note.important;
-
   const notesToShow = showAll
     ? notes
-    : notes.filter((note) => isNoteImportant(note));
+    : notes.filter((note) => note["important"]);
+
+  const toggleImportanceOf = (id) => {
+    const note = notes.find((n) => n["id"] === id);
+    if (!note) {
+      return;
+    }
+
+    const updatedNote = { ...note, important: !note["important"] };
+
+    noteService
+      .update(id, updatedNote)
+      .then((updatedNote) =>
+        setNotes(notes.map((n) => (n["id"] !== id ? n : updatedNote)))
+      );
+  };
 
   return (
     <div>
@@ -50,7 +60,11 @@ const App = () => {
       <ul>
         <ul>
           {notesToShow.map((note) => (
-            <Note key={note.id} note={note} />
+            <Note
+              key={note.id}
+              note={note}
+              toggleImportance={() => toggleImportanceOf(note.id)}
+            />
           ))}
         </ul>
       </ul>
