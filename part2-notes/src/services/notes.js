@@ -1,19 +1,23 @@
-import axios from "redaxios";
+import axios from 'axios'
+const baseUrl = 'http://localhost:3001/notes'
 
-export const BASE_URL = "http://localhost:3001/notes";
+const getAll = () => {
+  const request = axios.get(baseUrl)
+  return request.then(response => response.data)
+}
 
-const getAll = () => axios.get(BASE_URL).then((res) => res.data);
+const create = newObject => {
+  const request = axios.post(baseUrl, newObject)
+  return request.then(response => response.data)
+}
 
-const create = (newObject) =>
-  axios.post(BASE_URL, newObject).then((res) => res.data);
+const update = (id, newObject) => {
+  const request = axios.put(`${baseUrl}/${id}`, newObject)
+  return request.then(response => response.data)
+}
 
-const update = (id, updatedObject) =>
-  axios.put(BASE_URL + `/${id}`, updatedObject).then((res) => res.data);
-
-const notesService = {
-  getAll,
-  create,
-  update,
-};
-
-export default notesService;
+export default { 
+  getAll, 
+  create, 
+  update 
+}
