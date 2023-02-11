@@ -6,7 +6,18 @@ const ContactList = ({
   setFilteredList,
   contacts,
   setContacts,
+  setNotificationMessage,
 }) => {
+  const triggerNotification = (message, type) => {
+    setNotificationMessage({
+      message,
+      type,
+    });
+    setTimeout(() => {
+      setNotificationMessage({ message: "", type: "" });
+    }, 5000);
+  };
+
   const deleteContact = (e, contactId, contactName) => {
     e.preventDefault();
     if (!window.confirm(`You sure you wanna delete contact ${contactName}`)) {
@@ -18,7 +29,12 @@ const ContactList = ({
         setContacts(contacts.filter((el) => el.id !== contactId));
         setFilteredList(filteredList.filter((el) => el.id !== contactId));
       })
-      .catch(() => alert(`Something went wrong when deleting ${contactName}`));
+      .catch(() => {
+        triggerNotification(
+          `Something went wrong when deleting ${contactName}!`,
+          "error"
+        );
+      });
   };
 
   return (

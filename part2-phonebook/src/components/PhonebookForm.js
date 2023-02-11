@@ -1,7 +1,12 @@
 import { useState } from "react";
 import contactsService from "../services/contacts";
 
-export const PhonebookForm = ({ contacts, setContacts, setFilteredList }) => {
+const PhonebookForm = ({
+  contacts,
+  setContacts,
+  setFilteredList,
+  setNotificationMessage,
+}) => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
 
@@ -13,11 +18,50 @@ export const PhonebookForm = ({ contacts, setContacts, setFilteredList }) => {
     setNewNumber(e.target.value);
   };
 
+  const triggerNotification = (message, type) => {
+    setNotificationMessage({
+      message,
+      type,
+    });
+    setTimeout(() => {
+      setNotificationMessage({ message: "", type: "" });
+    }, 5000);
+  };
+
   const updateProps = (updatedContacts) => {
     setContacts(updatedContacts);
     setFilteredList(updatedContacts);
     setNewName("");
     setNewNumber("");
+  };
+
+  const updateContact = (foundUser) => {
+    const modifiedContact = { ...foundUser, number: newNumber };
+    contactsService
+      .updateContact(modifiedContact)
+      .then((updatedContact) => {
+        const updatedContacts = contacts.map((contact) =>
+          contact.id === updatedContact.id ? updatedContact : contact
+        );
+        updateProps(updatedContacts);
+        triggerNotification("Contact updated!", "success");
+      })
+      .catch((err) => triggerNotification("Could not update contact", "error"));
+  };
+
+  const saveContact = () => {
+    const newContact = {
+      name: newName,
+      number: newNumber,
+    };
+    contactsService
+      .saveContact(newContact)
+      .then((savedContact) => {
+        const updatedContacts = contacts.concat(savedContact);
+        updateProps(updatedContacts);
+        triggerNotification("Contact updated!", "success");
+      })
+      .catch((err) => triggerNotification("Could not save contact", "error"));
   };
 
   const addToPhonebook = (e) => {
@@ -26,7 +70,8 @@ export const PhonebookForm = ({ contacts, setContacts, setFilteredList }) => {
     if (!newName || !newNumber) {
       !newName && setNewName("");
       !newNumber && setNewNumber("");
-      return alert("Both fields are mandatory.");
+      triggerNotification("Both fields are mandatory!", "error");
+      return;
     }
 
     const foundUser = contacts.find((contact) => contact.name === newName);
@@ -39,23 +84,9 @@ export const PhonebookForm = ({ contacts, setContacts, setFilteredList }) => {
       ) {
         return;
       }
-      const modifiedContact = { ...foundUser, number: newNumber };
-      contactsService.updateContact(modifiedContact).then((updatedContact) => {
-        const updatedContacts = contacts.map((contact) =>
-          contact.id === updatedContact.id ? updatedContact : contact
-        );
-        updateProps(updatedContacts);
-      });
+      updateContact(foundUser);
     } else {
-      const newContact = {
-        name: newName,
-        number: newNumber,
-      };
-
-      contactsService.saveContact(newContact).then((savedContact) => {
-        const updatedContacts = contacts.concat(savedContact);
-        updateProps(updatedContacts);
-      });
+      saveContact();
     }
   };
 
@@ -82,3 +113,5 @@ export const PhonebookForm = ({ contacts, setContacts, setFilteredList }) => {
     </div>
   );
 };
+
+export default PhonebookForm;
