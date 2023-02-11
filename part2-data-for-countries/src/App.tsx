@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "redaxios";
 import "./App.css";
+import CountryDetails from "./components/CountryDetails";
 import CountryList from "./components/CountryList";
 
 interface Currency {
@@ -50,26 +51,7 @@ function App() {
             )}
             {countries.length > 10 && <p>Too many matches</p>}
             {countries.length === 1 && (
-                <>
-                    <h2>
-                        {countries[0].flag}
-                        {countries[0].name.common}
-                    </h2>
-                    <p>Capital: {countries[0].capital}</p>
-                    <p>
-                        Languages:{" "}
-                        {Object.keys(countries[0].languages).map(
-                            (key) => countries[0].languages[key]
-                        )}
-                    </p>
-                    <p>
-                        Currencies:{" "}
-                        {Object.keys(countries[0].currencies).map(
-                            (key) =>
-                                `${countries[0].currencies[key].name} - ${countries[0].currencies[key].symbol}`
-                        )}
-                    </p>
-                </>
+                <CountryDetails country={countries[0]} />
             )}
         </div>
     );
