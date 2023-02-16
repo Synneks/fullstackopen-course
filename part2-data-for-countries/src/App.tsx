@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import axios from "redaxios";
 import "./App.css";
 import CountryDetails from "./components/CountryDetails";
 import CountryList from "./components/CountryList";
+import getCountries from "./services/countries";
 
 interface Currency {
     name: string;
@@ -11,7 +11,7 @@ interface Currency {
 
 export interface Country {
     name: { common: string };
-    cioc: string;
+    cca2: string;
     flag: string;
     capital: string[];
     languages: { [index: string]: string };
@@ -23,16 +23,11 @@ function App() {
     const [countries, setCountries] = useState<Country[]>([]);
 
     useEffect(() => {
-        console.log("effect triggered");
         if (!searchField) {
             return;
         }
-        axios
-            .get(`https://restcountries.com/v3.1/name/${searchField}`)
-            .then((res) => {
-                setCountries(res.data);
-                return;
-            })
+        getCountries(searchField)
+            .then((res) => setCountries(res))
             .catch((err) => {
                 console.log(err);
             });

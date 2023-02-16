@@ -4,7 +4,7 @@ const CountryList = ({ countries }: { countries: Country[] }) => {
     return (
         <ul>
             {countries.map((country) => (
-                <li key={country.cioc}>{country.name.common}</li>
+                <li key={country.cca2}>{country.name.common}</li>
             ))}
         </ul>
     );
