@@ -1,0 +1,24 @@
+{
+  "name": "part3-backend-phonebook",
+  "version": "1.0.0",
+  "description": "phone book backend application using express",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "fullstackopen",
+    "express",
+    "phonebook"
+  ],
+  "author": "Denis Eneotescu",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.21"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
