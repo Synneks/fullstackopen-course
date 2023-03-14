@@ -1,7 +1,15 @@
-const { request, response } = require("express");
 const express = require("express");
 const app = express();
 app.use(express.json());
+
+const requestLogger = (request, response, next) => {
+    console.log("Method:", request.method);
+    console.log("Path:  ", request.path);
+    console.log("Body:  ", request.body);
+    console.log("---");
+    next();
+};
+app.use(requestLogger);
 
 let phonebook = [
     {
@@ -83,6 +91,12 @@ app.post("/api/persons", (request, response) => {
     phonebook.push(newPerson);
     response.status(204).send();
 });
+
+const unknownEndpoint = (request, response) => {
+    response.status(404).send({ error: "unknown endpoint" });
+};
+
+app.use(unknownEndpoint);
 
 const PORT = 3001;
 app.listen(PORT, () => console.log(`Phonebook app server running on ${PORT}`));
