@@ -66,7 +66,14 @@ app.delete("/api/persons/:id", (request, response) => {
 app.post("/api/persons", (request, response) => {
     const body = request.body;
     if (!body.number || !body.name) {
-        response.status(406).json({ warning: "Name and number are mandatory" });
+        response.status(406).json({ error: "Name and number are mandatory" });
+    }
+
+    const existingPerson = phonebook.find(
+        (person) => person.name === body.name
+    );
+    if (existingPerson) {
+        response.status(400).json({ error: "Name already exists" });
     }
     const newPerson = {
         id: generateId(),
