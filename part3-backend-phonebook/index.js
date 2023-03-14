@@ -26,6 +26,12 @@ let phonebook = [
     },
 ];
 
+function generateId() {
+    const maxId =
+        phonebook.length > 0 ? Math.max(...phonebook.map((n) => n.id)) : 0;
+    return maxId + 1;
+}
+
 app.get("/", (request, response) => {
     response.send("<h1>Phone book app server</h1>");
 });
@@ -55,6 +61,20 @@ app.delete("/api/persons/:id", (request, response) => {
     const id = Number(request.params.id);
     phonebook = phonebook.filter((person) => person.id !== id);
     response.json(phonebook);
+});
+
+app.post("/api/persons", (request, response) => {
+    const body = request.body;
+    if (!body.number || !body.name) {
+        response.status(406).json({ warning: "Name and number are mandatory" });
+    }
+    const newPerson = {
+        id: generateId(),
+        name: body.name,
+        number: body.number,
+    };
+    phonebook.push(newPerson);
+    response.status(204).send();
 });
 
 const PORT = 3001;
