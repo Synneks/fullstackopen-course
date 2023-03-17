@@ -3,6 +3,8 @@ const app = express();
 const cors = require("cors");
 app.use(express.json());
 app.use(cors());
+app.use(express.static("build"));
+const BASE_URL = "/api/notes";
 
 let notes = [
     {
@@ -27,9 +29,10 @@ function generateId() {
     return maxId + 1;
 }
 
-app.get("/", (request, response) => {
-    response.send("<h1>Hellow</h1>");
-});
+const getAll = () => {
+    const request = axios.get(BASE_URL);
+    return request.then((response) => response.data);
+};
 
 app.get("/api/notes", (request, response) => {
     response.json(notes);
