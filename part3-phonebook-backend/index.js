@@ -1,18 +1,21 @@
 const express = require("express");
 const morgan = require("morgan");
 const app = express();
-app.use(express.json());
+const cors = require("cors");
 
-app.use(
-    morgan(function (tokens, req, res) {
-        return [
-            tokens.method(req, res),
-            tokens.url(req, res),
-            tokens.status(req, res),
-            JSON.stringify(req.body),
-        ].join(" - ");
-    })
-);
+const customRequestLogger = function (tokens, req, res) {
+    return [
+        tokens.method(req, res),
+        tokens.url(req, res),
+        tokens.status(req, res),
+        JSON.stringify(req.body),
+    ].join(" - ");
+};
+
+app.use(cors());
+app.use(express.json());
+app.use(morgan(customRequestLogger));
+app.use(express.static("build"));
 
 let phonebook = [
     {
@@ -47,7 +50,7 @@ app.get("/", (request, response) => {
     response.send("<h1>Phone book app server</h1>");
 });
 
-app.get("/api/persons", (request, response) => {
+app.get("/api/contacts", (request, response) => {
     response.json(phonebook);
 });
 
@@ -59,47 +62,41 @@ app.get("/info", (request, response) => {
     );
 });
 
-app.get("/api/persons/:id", (request, response) => {
+app.get("/api/contacts/:id", (request, response) => {
     const id = Number(request.params.id);
-    const searchedPerson = phonebook.find((person) => person.id === id);
-    if (!searchedPerson) {
+    const searchedContact = phonebook.find((contact) => contact.id === id);
+    if (!searchedContact) {
         response.status(404);
     }
-    response.json(searchedPerson);
+    response.json(searchedContact);
 });
 
-app.delete("/api/persons/:id", (request, response) => {
+app.delete("/api/contacts/:id", (request, response) => {
     const id = Number(request.params.id);
-    phonebook = phonebook.filter((person) => person.id !== id);
+    phonebook = phonebook.filter((contact) => contact.id !== id);
     response.json(phonebook);
 });
 
-app.post("/api/persons", (request, response) => {
+app.post("/api/contacts", (request, response) => {
     const body = request.body;
     if (!body.number || !body.name) {
         response.status(406).json({ error: "Name and number are mandatory" });
     }
 
-    const existingPerson = phonebook.find(
-        (person) => person.name === body.name
+    const existingContact = phonebook.find(
+        (contact) => contact.name === body.name
     );
-    if (existingPerson) {
+    if (existingContact) {
         response.status(400).json({ error: "Name already exists" });
     }
-    const newPerson = {
+    const newContact = {
         id: generateId(),
         name: body.name,
         number: body.number,
     };
-    phonebook.push(newPerson);
+    phonebook.push(newContact);
     response.status(204).send();
 });
-
-const unknownEndpoint = (request, response) => {
-    response.status(404).send({ error: "unknown endpoint" });
-};
-
-app.use(unknownEndpoint);
 
 const PORT = 3001;
 app.listen(PORT, () => console.log(`Phonebook app server running on ${PORT}`));
