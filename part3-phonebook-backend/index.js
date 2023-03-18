@@ -1,7 +1,9 @@
+require('dotenv').config();
 const express = require('express');
 const morgan = require('morgan');
 const app = express();
 const cors = require('cors');
+const Contact = require('./models/contact');
 
 const customRequestLogger = function (tokens, req, res) {
   return [
@@ -17,64 +19,26 @@ app.use(express.json());
 app.use(morgan(customRequestLogger));
 app.use(express.static('build'));
 
-let phonebook = [
-  {
-    id: 1,
-    name: 'Arto Hellas',
-    number: '040-123456',
-  },
-  {
-    id: 2,
-    name: 'Ada Lovelace',
-    number: '39-44-5323523',
-  },
-  {
-    id: 3,
-    name: 'Dan Abramov',
-    number: '12-43-234345',
-  },
-  {
-    id: 4,
-    name: 'Mary Poppendieck',
-    number: '39-23-6423122',
-  },
-];
-
-function generateId() {
-  const maxId =
-    phonebook.length > 0 ? Math.max(...phonebook.map((n) => n.id)) : 0;
-  return maxId + 1;
-}
-
 app.get('/', (request, response) => {
   response.send('<h1>Phone book app server</h1>');
 });
 
 app.get('/api/contacts', (request, response) => {
-  response.json(phonebook);
+  Contact.find({}).then((contacts) => response.json(contacts));
 });
 
 app.get('/info', (request, response) => {
-  response.send(
-    `<p>Phonebook has info for ${
-      phonebook.length
-    } people</p><p>${new Date()}</p>`
-  );
+  Contact.countDocuments().then((amountOfContacts) => {
+    response.send(
+      `<p>Phonebook has info for ${amountOfContacts} people</p><p>${new Date()}</p>`
+    );
+  });
 });
 
 app.get('/api/contacts/:id', (request, response) => {
-  const id = Number(request.params.id);
-  const searchedContact = phonebook.find((contact) => contact.id === id);
-  if (!searchedContact) {
-    response.status(404);
-  }
-  response.json(searchedContact);
-});
-
-app.delete('/api/contacts/:id', (request, response) => {
-  const id = Number(request.params.id);
-  phonebook = phonebook.filter((contact) => contact.id !== id);
-  response.json(phonebook);
+  Contact.findById(request.params.id).then((contact) => {
+    response.json(contact);
+  });
 });
 
 app.post('/api/contacts', (request, response) => {
@@ -83,19 +47,27 @@ app.post('/api/contacts', (request, response) => {
     response.status(406).json({ error: 'Name and number are mandatory' });
   }
 
-  const existingContact = phonebook.find(
-    (contact) => contact.name === body.name
+  Contact.findOne({ name: body.name }).then(
+    (contact) =>
+      contact &&
+      response
+        .status(409)
+        .json({ error: `Contact named ${contact.name} already exists` })
   );
-  if (existingContact) {
-    response.status(400).json({ error: 'Name already exists' });
-  }
-  const newContact = {
-    id: generateId(),
+
+  const newContact = new Contact({
     name: body.name,
     number: body.number,
-  };
-  phonebook.push(newContact);
-  response.status(204).send();
+  });
+  newContact.save().then((contact) => {
+    response.status(201).send(contact);
+  });
+});
+
+app.delete('/api/contacts/:id', (request, response) => {
+  Contact.deleteOne({ _id: request.params.id }).then(() =>
+    response.status(204).end()
+  );
 });
 
 const PORT = 3001;
