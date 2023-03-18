@@ -1,17 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 
-import ContactList from "./components/ContactList";
-import PhonebookForm from "./components/PhonebookForm";
-import Search from "./components/Search";
-import Notification from "./components/Notification";
-import contactsService from "./services/contacts";
+import ContactList from './components/ContactList';
+import PhonebookForm from './components/PhonebookForm';
+import Search from './components/Search';
+import Notification from './components/Notification';
+import contactsService from './services/contacts';
 
 const App = () => {
   const [contacts, setContacts] = useState([]);
   const [filteredList, setFilteredList] = useState(contacts);
   const [notificationMessage, setNotificationMessage] = useState({
-    message: "",
-    type: "",
+    message: '',
+    type: '',
   });
 
   useEffect(() => {
@@ -23,11 +23,11 @@ const App = () => {
       })
       .catch((err) => {
         setNotificationMessage({
-          message: "Could not load contacts",
-          type: "error",
+          message: 'Could not load contacts',
+          type: 'error',
         });
         setTimeout(() => {
-          setNotificationMessage({ message: "", type: "" });
+          setNotificationMessage({ message: '', type: '' });
         }, 5000);
       });
   }, []);

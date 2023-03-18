@@ -1,5 +1,5 @@
-import React from "react";
-import contactsService from "../services/contacts";
+import React from 'react';
+import contactsService from '../services/contacts';
 
 const ContactList = ({
   filteredList,
@@ -14,7 +14,7 @@ const ContactList = ({
       type,
     });
     setTimeout(() => {
-      setNotificationMessage({ message: "", type: "" });
+      setNotificationMessage({ message: '', type: '' });
     }, 5000);
   };
 
@@ -32,7 +32,7 @@ const ContactList = ({
       .catch(() => {
         triggerNotification(
           `Something went wrong when deleting ${contactName}!`,
-          "error"
+          'error'
         );
       });
   };

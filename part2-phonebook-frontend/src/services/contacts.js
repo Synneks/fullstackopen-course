@@ -1,6 +1,6 @@
-import axios from "redaxios";
+import axios from 'redaxios';
 
-export const BASE_URL = "/api/contacts";
+export const BASE_URL = '/api/contacts';
 
 const getAllContacts = () => axios.get(BASE_URL).then((res) => res.data);
 

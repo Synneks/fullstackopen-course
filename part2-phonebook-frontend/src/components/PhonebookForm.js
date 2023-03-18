@@ -1,5 +1,5 @@
-import { useState } from "react";
-import contactsService from "../services/contacts";
+import { useState } from 'react';
+import contactsService from '../services/contacts';
 
 const PhonebookForm = ({
   contacts,
@@ -7,8 +7,8 @@ const PhonebookForm = ({
   setFilteredList,
   setNotificationMessage,
 }) => {
-  const [newName, setNewName] = useState("");
-  const [newNumber, setNewNumber] = useState("");
+  const [newName, setNewName] = useState('');
+  const [newNumber, setNewNumber] = useState('');
 
   const handleNameInput = (e) => {
     setNewName(e.target.value);
@@ -24,15 +24,15 @@ const PhonebookForm = ({
       type,
     });
     setTimeout(() => {
-      setNotificationMessage({ message: "", type: "" });
+      setNotificationMessage({ message: '', type: '' });
     }, 5000);
   };
 
   const updateProps = (updatedContacts) => {
     setContacts(updatedContacts);
     setFilteredList(updatedContacts);
-    setNewName("");
-    setNewNumber("");
+    setNewName('');
+    setNewNumber('');
   };
 
   const updateContact = (foundUser) => {
@@ -44,9 +44,9 @@ const PhonebookForm = ({
           contact.id === updatedContact.id ? updatedContact : contact
         );
         updateProps(updatedContacts);
-        triggerNotification("Contact updated!", "success");
+        triggerNotification('Contact updated!', 'success');
       })
-      .catch((err) => triggerNotification("Could not update contact", "error"));
+      .catch((err) => triggerNotification('Could not update contact', 'error'));
   };
 
   const saveContact = () => {
@@ -59,18 +59,18 @@ const PhonebookForm = ({
       .then((savedContact) => {
         const updatedContacts = contacts.concat(savedContact);
         updateProps(updatedContacts);
-        triggerNotification("Contact updated!", "success");
+        triggerNotification('Contact updated!', 'success');
       })
-      .catch((err) => triggerNotification("Could not save contact", "error"));
+      .catch((err) => triggerNotification('Could not save contact', 'error'));
   };
 
   const addToPhonebook = (e) => {
     e.preventDefault();
 
     if (!newName || !newNumber) {
-      !newName && setNewName("");
-      !newNumber && setNewNumber("");
-      triggerNotification("Both fields are mandatory!", "error");
+      !newName && setNewName('');
+      !newNumber && setNewNumber('');
+      triggerNotification('Both fields are mandatory!', 'error');
       return;
     }
 
@@ -94,10 +94,10 @@ const PhonebookForm = ({
     <div>
       <form onSubmit={addToPhonebook}>
         <div>
-          name:{" "}
+          name:{' '}
           <input name="nameInput" value={newName} onChange={handleNameInput} />
           <br />
-          number:{" "}
+          number:{' '}
           <input
             name="numberInput"
             value={newNumber}
