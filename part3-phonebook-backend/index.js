@@ -24,6 +24,7 @@ app.get('/', (request, response) => {
 });
 
 app.get('/api/contacts', (request, response) => {
+  console.log('facem findul');
   Contact.find({}).then((contacts) => response.json(contacts));
 });
 
@@ -44,23 +45,46 @@ app.get('/api/contacts/:id', (request, response) => {
 app.post('/api/contacts', (request, response) => {
   const body = request.body;
   if (!body.number || !body.name) {
-    response.status(406).json({ error: 'Name and number are mandatory' });
+    response.status(400).json({ error: 'Name and number are mandatory' });
+    return;
   }
 
-  Contact.findOne({ name: body.name }).then(
-    (contact) =>
-      contact &&
+  Contact.findOne({ name: body.name }).then((contact) => {
+    if (contact) {
       response
         .status(409)
-        .json({ error: `Contact named ${contact.name} already exists` })
-  );
+        .json({ error: `Contact named ${contact.name} already exists` });
+    } else {
+      const newContact = new Contact({
+        name: body.name,
+        number: body.number,
+      });
 
-  const newContact = new Contact({
-    name: body.name,
-    number: body.number,
+      newContact.save().then((result) => response.status(201).json(result));
+    }
   });
-  newContact.save().then((contact) => {
-    response.status(201).send(contact);
+});
+
+app.put('/api/contacts/:id', (request, response) => {
+  const id = request.params.id;
+
+  if (!request.body || !request.body.number) {
+    response.status(400).json({ error: 'Invalid request body' });
+    return;
+  }
+
+  const newNumber = request.body.number;
+
+  Contact.findByIdAndUpdate(
+    id,
+    { $set: { number: newNumber } },
+    { new: true }
+  ).then((updatedContact) => {
+    if (!updatedContact) {
+      response.status(404).json({ error: 'Contact not found' });
+    } else {
+      response.json(updatedContact);
+    }
   });
 });
 
