@@ -20,7 +20,11 @@ const contactSchema = new mongoose.Schema({
     minLength: 3,
     require: true,
   },
-  number: String,
+  number: {
+    type: String,
+    minLength: 8,
+    require: true,
+  },
 });
 
 contactSchema.set('toJSON', {

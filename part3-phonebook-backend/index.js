@@ -93,11 +93,6 @@ app.post('/api/contacts', (request, response, next) => {
 app.put('/api/contacts/:id', (request, response, next) => {
   const id = request.params.id;
 
-  if (!request.body || !request.body.number) {
-    response.status(400).json({ error: 'Invalid request body' });
-    return;
-  }
-
   const newNumber = request.body.number;
 
   Contact.findByIdAndUpdate(
