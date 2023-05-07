@@ -23,6 +23,8 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' });
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message });
   }
 
   next(error);
@@ -62,7 +64,7 @@ app.get('/api/contacts/:id', (request, response, next) => {
     .catch((err) => next(err));
 });
 
-app.post('/api/contacts', (request, response) => {
+app.post('/api/contacts', (request, response, next) => {
   const body = request.body;
   if (!body.number || !body.name) {
     response.status(400).json({ error: 'Name and number are mandatory' });
@@ -80,7 +82,10 @@ app.post('/api/contacts', (request, response) => {
         number: body.number,
       });
 
-      newContact.save().then((result) => response.status(201).json(result));
+      newContact
+        .save()
+        .then((result) => response.status(201).json(result))
+        .catch((err) => next(err));
     }
   });
 });
@@ -95,7 +100,11 @@ app.put('/api/contacts/:id', (request, response, next) => {
 
   const newNumber = request.body.number;
 
-  Contact.findByIdAndUpdate(id, { $set: { number: newNumber } }, { new: true })
+  Contact.findByIdAndUpdate(
+    id,
+    { $set: { number: newNumber } },
+    { new: true, runValidators: true, context: 'query' }
+  )
     .then((updatedContact) => {
       if (!updatedContact) {
         response.status(404).json({ error: 'Contact not found' });
