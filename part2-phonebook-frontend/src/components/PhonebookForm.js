@@ -61,7 +61,7 @@ const PhonebookForm = ({
         updateProps(updatedContacts);
         triggerNotification('Contact updated!', 'success');
       })
-      .catch((err) => triggerNotification('Could not save contact', 'error'));
+      .catch((err) => triggerNotification(err.data.error, 'error'));
   };
 
   const addToPhonebook = (e) => {
