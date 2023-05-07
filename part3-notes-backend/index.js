@@ -16,10 +16,20 @@ const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' });
 };
 
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message);
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' });
+  }
+
+  next(error);
+};
+
 app.use(cors());
+app.use(express.static('build'));
 app.use(express.json());
 app.use(requestLogger);
-app.use(express.static('build'));
 
 app.get('/', (req, res) => {
   res.send('<h1>Hello World!</h1>');
@@ -31,10 +41,18 @@ app.get('/api/notes', (req, res) => {
   });
 });
 
-app.get('/api/notes/:id', (request, response) => {
-  Note.findById(request.params.id).then((note) => {
-    response.json(note);
-  });
+app.get('/api/notes/:id', (request, response, next) => {
+  Note.findById(request.params.id)
+    .then((note) => {
+      if (note) {
+        response.json(note);
+      } else {
+        response.status(404).end();
+      }
+    })
+    .catch((err) => {
+      next(err);
+    });
 });
 
 app.post('/api/notes', (request, response) => {
@@ -56,12 +74,15 @@ app.post('/api/notes', (request, response) => {
   });
 });
 
-app.delete('/api/notes/:id', (request, response) => {
-  Note.deleteOne({ _id: request.params.id }).then(() => {
-    response.status(204).end();
-  });
+app.delete('/api/notes/:id', (request, response, next) => {
+  Note.deleteOne({ _id: request.params.id })
+    .then(() => {
+      response.status(204).end();
+    })
+    .catch((err) => next(err));
 });
 
+app.use(errorHandler);
 app.use(unknownEndpoint);
 
 const PORT = process.env.PORT;
