@@ -14,10 +14,24 @@ const customRequestLogger = function (tokens, req, res) {
   ].join(' - ');
 };
 
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' });
+};
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message);
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' });
+  }
+
+  next(error);
+};
+
 app.use(cors());
+app.use(express.static('build'));
 app.use(express.json());
 app.use(morgan(customRequestLogger));
-app.use(express.static('build'));
 
 app.get('/', (request, response) => {
   response.send('<h1>Phone book app server</h1>');
@@ -36,10 +50,16 @@ app.get('/info', (request, response) => {
   });
 });
 
-app.get('/api/contacts/:id', (request, response) => {
-  Contact.findById(request.params.id).then((contact) => {
-    response.json(contact);
-  });
+app.get('/api/contacts/:id', (request, response, next) => {
+  Contact.findById(request.params.id)
+    .then((contact) => {
+      if (contact) {
+        response.json(contact);
+      } else {
+        response.status(404).end();
+      }
+    })
+    .catch((err) => next(err));
 });
 
 app.post('/api/contacts', (request, response) => {
@@ -65,7 +85,7 @@ app.post('/api/contacts', (request, response) => {
   });
 });
 
-app.put('/api/contacts/:id', (request, response) => {
+app.put('/api/contacts/:id', (request, response, next) => {
   const id = request.params.id;
 
   if (!request.body || !request.body.number) {
@@ -75,24 +95,31 @@ app.put('/api/contacts/:id', (request, response) => {
 
   const newNumber = request.body.number;
 
-  Contact.findByIdAndUpdate(
-    id,
-    { $set: { number: newNumber } },
-    { new: true }
-  ).then((updatedContact) => {
-    if (!updatedContact) {
-      response.status(404).json({ error: 'Contact not found' });
-    } else {
-      response.json(updatedContact);
-    }
-  });
+  Contact.findByIdAndUpdate(id, { $set: { number: newNumber } }, { new: true })
+    .then((updatedContact) => {
+      if (!updatedContact) {
+        response.status(404).json({ error: 'Contact not found' });
+      } else {
+        response.json(updatedContact);
+      }
+    })
+    .catch((err) => next(err));
 });
 
-app.delete('/api/contacts/:id', (request, response) => {
-  Contact.deleteOne({ _id: request.params.id }).then(() =>
-    response.status(204).end()
-  );
+app.delete('/api/contacts/:id', (request, response, next) => {
+  Contact.deleteOne({ _id: request.params.id })
+    .then((res) => {
+      if (res.deletedCount) {
+        response.status(204).end();
+      } else {
+        response.status(404).end();
+      }
+    })
+    .catch((err) => next(err));
 });
+
+app.use(errorHandler);
+app.use(unknownEndpoint);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => console.log(`Phonebook app server running on ${PORT}`));
