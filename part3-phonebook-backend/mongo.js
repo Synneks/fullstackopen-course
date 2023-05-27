@@ -14,7 +14,7 @@ const contactSchema = new mongoose.Schema({
   name: String,
   number: String,
 });
-mongoose.connect;
+
 const Contact = mongoose.model('Contact', contactSchema);
 
 if (process.argv.length === 5) {

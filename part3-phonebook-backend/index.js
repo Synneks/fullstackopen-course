@@ -1,18 +1,18 @@
 require('dotenv').config();
 const express = require('express');
 const morgan = require('morgan');
+
 const app = express();
 const cors = require('cors');
 const Contact = require('./models/contact');
 
-const customRequestLogger = function (tokens, req, res) {
-  return [
+const customRequestLogger = (tokens, req, res) =>
+  [
     tokens.method(req, res),
     tokens.url(req, res),
     tokens.status(req, res),
     JSON.stringify(req.body),
   ].join(' - ');
-};
 
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' });
@@ -22,9 +22,9 @@ const errorHandler = (error, request, response, next) => {
   console.error(error.message);
 
   if (error.name === 'CastError') {
-    return response.status(400).send({ error: 'malformatted id' });
+    response.status(400).send({ error: 'malformatted id' });
   } else if (error.name === 'ValidationError') {
-    return response.status(400).json({ error: error.message });
+    response.status(400).json({ error: error.message });
   }
 
   next(error);
@@ -65,7 +65,7 @@ app.get('/api/contacts/:id', (request, response, next) => {
 });
 
 app.post('/api/contacts', (request, response, next) => {
-  const body = request.body;
+  const { body } = request;
   if (!body.number || !body.name) {
     response.status(400).json({ error: 'Name and number are mandatory' });
     return;
@@ -91,7 +91,7 @@ app.post('/api/contacts', (request, response, next) => {
 });
 
 app.put('/api/contacts/:id', (request, response, next) => {
-  const id = request.params.id;
+  const { id } = request.params;
 
   const newNumber = request.body.number;
 
