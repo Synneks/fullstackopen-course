@@ -7,7 +7,7 @@ const totalLikes = (blogList) =>
 
 const favoriteBlog = (blogList) => {
   if (blogList.length === 0) {
-    throw new Error('list of favorite blogs cannot be empty');
+    throw new Error('list of blogs cannot be empty');
   }
 
   let currentFavoriteBlog = blogList[0];
@@ -18,4 +18,53 @@ const favoriteBlog = (blogList) => {
   return currentFavoriteBlog;
 };
 
-module.exports = { dummy, totalLikes, favoriteBlog };
+const mostBlogs = (blogList) => {
+  if (blogList.length === 0) {
+    throw new Error('list of blogs cannot be empty');
+  }
+  const authorsMap = new Map();
+  blogList.forEach((blog) => {
+    if (authorsMap.has(blog.author)) {
+      authorsMap.set(blog.author, [...authorsMap.get(blog.author), blog]);
+    } else {
+      authorsMap.set(blog.author, [blog]);
+    }
+  });
+
+  let currentBiggestAuthor = {
+    author: blogList[0].author,
+    blogs: authorsMap.get(blogList[0].author).length,
+  };
+
+  authorsMap.forEach((authorBlogList, author) => {
+    if (authorBlogList.length > currentBiggestAuthor.blogs) {
+      currentBiggestAuthor = { author, blogs: authorBlogList.length };
+    }
+  });
+
+  return currentBiggestAuthor;
+};
+
+const mostLikes = (blogList) => {
+  if (blogList.length === 0) {
+    throw new Error('list of blogs cannot be empty');
+  }
+
+  const authorsMap = [
+    ...blogList.reduce(
+      (map, blog) =>
+        map.set(blog.author, (map.get(blog.author) || 0) + blog.likes),
+      new Map()
+    ),
+  ];
+
+  return authorsMap.reduce(
+    (currentMostLikedAuthor, [author, likes]) =>
+      likes > currentMostLikedAuthor.totalLikes
+        ? { author, totalLikes: likes }
+        : currentMostLikedAuthor,
+    { author: blogList[0].author, likes: 0 }
+  );
+};
+
+module.exports = { dummy, totalLikes, favoriteBlog, mostBlogs, mostLikes };

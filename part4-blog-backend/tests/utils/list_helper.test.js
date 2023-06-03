@@ -32,7 +32,7 @@ describe('totalLikes', () => {
 describe('favoriteBlog', () => {
   test('should throw error for empty array', () => {
     expect(() => listHelper.favoriteBlog([])).toThrow(
-      'list of favorite blogs cannot be empty'
+      'list of blogs cannot be empty'
     );
   });
 
@@ -44,5 +44,41 @@ describe('favoriteBlog', () => {
     ];
     const result = listHelper.favoriteBlog(blogsList);
     expect(result).toEqual({ name: 'test2', likes: 3 });
+  });
+});
+
+describe('mostBlogs', () => {
+  test('should throw error for empty array', () => {
+    expect(() => listHelper.mostBlogs([])).toThrow(
+      'list of blogs cannot be empty'
+    );
+  });
+
+  test('of array with 3 blogs, 2 different authors', () => {
+    const blogsList = [
+      { author: 'test' },
+      { author: 'test2' },
+      { author: 'test2' },
+    ];
+    const result = listHelper.mostBlogs(blogsList);
+    expect(result).toEqual({ author: 'test2', blogs: 2 });
+  });
+});
+
+describe('mostLikes', () => {
+  test('should throw error for empty array', () => {
+    expect(() => listHelper.mostBlogs([])).toThrow(
+      'list of blogs cannot be empty'
+    );
+  });
+
+  test('of array with 3 blogs, 2 different authors', () => {
+    const blogsList = [
+      { author: 'test', likes: 3 },
+      { author: 'test2', likes: 1 },
+      { author: 'test2', likes: 1 },
+    ];
+    const result = listHelper.mostLikes(blogsList);
+    expect(result).toEqual({ author: 'test', totalLikes: 3 });
   });
 });
