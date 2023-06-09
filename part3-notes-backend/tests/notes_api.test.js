@@ -67,3 +67,29 @@ test('note without content is not added', async () => {
 
   expect(notesAtEnd).toHaveLength(helper.initialNotes.length);
 });
+
+test('a specific note can be returned', async () => {
+  const notesAtStart = await helper.notesInDb();
+
+  const noteToView = notesAtStart[0];
+
+  const resultNote = await api
+    .get(`/api/notes/${noteToView.id}`)
+    .expect(200)
+    .expect('Content-Type', /application\/json/);
+
+  expect(resultNote).toEqual(noteToView);
+});
+
+test('a note can be deleted', async () => {
+  const notesAtStart = await helper.notesInDb();
+  const noteToDelete = notesAtStart[0];
+
+  console.log(noteToDelete);
+  await api.delete(`/api/notes/${noteToDelete.id}`);
+
+  const notesAfterRequest = await helper.notesInDb();
+  expect(notesAfterRequest).toHaveLength(notesAtStart.length - 1);
+  const contents = notesAfterRequest.map((r) => r.content);
+  expect(contents).not.toContain(noteToDelete.content);
+}, 1000000);
