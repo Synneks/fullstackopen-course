@@ -9,11 +9,12 @@ const api = supertest(app);
 beforeEach(async () => {
   await Note.deleteMany({});
 
-  let noteObject = new Note(helper.initialNotes[0]);
-  await noteObject.save();
+  for (let note of helper.initialNotes) {
+    let noteObject = new Note(note);
+    await noteObject.save();
+  }
 
-  noteObject = new Note(helper.initialNotes[1]);
-  await noteObject.save();
+  console.log(await helper.notesInDb());
 });
 
 test('notes are returned as json', async () => {
@@ -74,11 +75,12 @@ test('a specific note can be returned', async () => {
   const noteToView = notesAtStart[0];
 
   const resultNote = await api
+    // @ts-ignore
     .get(`/api/notes/${noteToView.id}`)
     .expect(200)
     .expect('Content-Type', /application\/json/);
 
-  expect(resultNote).toEqual(noteToView);
+  expect(JSON.parse(resultNote.text)).toEqual(noteToView);
 });
 
 test('a note can be deleted', async () => {
@@ -86,6 +88,7 @@ test('a note can be deleted', async () => {
   const noteToDelete = notesAtStart[0];
 
   console.log(noteToDelete);
+  // @ts-ignore
   await api.delete(`/api/notes/${noteToDelete.id}`);
 
   const notesAfterRequest = await helper.notesInDb();
