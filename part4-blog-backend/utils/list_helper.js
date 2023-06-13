@@ -63,7 +63,7 @@ const mostLikes = (blogList) => {
       likes > currentMostLikedAuthor.totalLikes
         ? { author, totalLikes: likes }
         : currentMostLikedAuthor,
-    { author: blogList[0].author, likes: 0 }
+    { author: blogList[0].author, totalLikes: 0 }
   );
 };
 

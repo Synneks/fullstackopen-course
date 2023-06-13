@@ -13,8 +13,6 @@ beforeEach(async () => {
     let noteObject = new Note(note);
     await noteObject.save();
   }
-
-  console.log(await helper.notesInDb());
 });
 
 test('notes are returned as json', async () => {

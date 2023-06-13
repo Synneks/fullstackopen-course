@@ -1,13 +1,13 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const blogsRouter = require('./controller/blogs');
+const blogsRouter = require('./controllers/blogs');
+const config = require('./utils/config');
+require('express-async-errors');
 
 const app = express();
 
-const mongoUrl =
-  'mongodb+srv://synneks:synneks@cluster0.3mzik.mongodb.net/fullstackopen-blog?retryWrites=true&w=majority';
-mongoose.connect(mongoUrl);
+mongoose.connect(config.MONGO_DB_URI || '');
 
 app.use(cors());
 app.use(express.json());
