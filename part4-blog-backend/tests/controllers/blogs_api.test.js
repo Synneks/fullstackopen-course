@@ -67,3 +67,18 @@ test('saving a new blog', async () => {
   expect(savedBlogs).toHaveLength(1);
   expect(savedBlogs[0]).toMatchObject(newBlog);
 });
+
+test('saving a blog without likes defaults to 0', async () => {
+  const newBlog = {
+    title: 'TSAONGAF',
+    author: 'MMANSON',
+    url: 'mmanson.com',
+  };
+
+  await api.post('/api/blogs').send(newBlog).expect(201);
+
+  const savedBlogs = await Blog.find({ title: 'TSAONGAF' });
+
+  expect(savedBlogs).toHaveLength(1);
+  expect(savedBlogs[0].likes).toEqual(0);
+});
