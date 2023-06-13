@@ -51,3 +51,19 @@ test('the unique identifier property of the blog posts is named id', async () =>
     expect(blog.id).toBeDefined;
   });
 });
+
+test('saving a new blog', async () => {
+  const newBlog = {
+    title: 'TSAONGAF',
+    author: 'MMANSON',
+    url: 'mmanson.com',
+    likes: 100,
+  };
+
+  await api.post('/api/blogs').send(newBlog).expect(201);
+
+  const savedBlogs = await Blog.find({ title: 'TSAONGAF' });
+
+  expect(savedBlogs).toHaveLength(1);
+  expect(savedBlogs[0]).toMatchObject(newBlog);
+});
