@@ -41,3 +41,13 @@ test('return all blogs as json', async () => {
     .expect(200)
     .expect('Content-Type', /application\/json/);
 });
+
+test('the unique identifier property of the blog posts is named id', async () => {
+  const apiResult = await api.get('/api/blogs');
+
+  const blogs = JSON.parse(apiResult.text);
+
+  blogs.forEach((blog) => {
+    expect(blog.id).toBeDefined;
+  });
+});
