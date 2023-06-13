@@ -10,6 +10,7 @@ const mongoose = require('mongoose');
 
 mongoose.set('strictQuery', false);
 
+console.log(config.MONGO_DB_URI);
 mongoose
   .connect(config.MONGO_DB_URI || '')
   .then(() => {

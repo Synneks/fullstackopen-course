@@ -82,3 +82,21 @@ test('saving a blog without likes defaults to 0', async () => {
   expect(savedBlogs).toHaveLength(1);
   expect(savedBlogs[0].likes).toEqual(0);
 });
+
+test('saving a blog without title should return 400', async () => {
+  const newBlog = {
+    author: 'MMANSON',
+    url: 'mmanson.com',
+  };
+
+  await api.post('/api/blogs').send(newBlog).expect(400);
+});
+
+test('saving a blog without url should return 400', async () => {
+  const newBlog = {
+    title: 'test',
+    author: 'MMANSON',
+  };
+
+  await api.post('/api/blogs').send(newBlog).expect(400);
+});
