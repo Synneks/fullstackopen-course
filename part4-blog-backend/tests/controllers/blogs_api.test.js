@@ -111,11 +111,33 @@ describe('saving blogs', () => {
 describe('deleting blogs', () => {
   test('deleting a blog works', async () => {
     const savedBlogs = await Blog.find({});
-
     const blogToDelete = savedBlogs[0];
     await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
   });
   test('deleting a blog that does not exist', async () => {
     await api.delete(`/api/blogs/fakeId}`).expect(400);
+  });
+});
+
+describe('updating blogs', () => {
+  test('updating a blog works', async () => {
+    const savedBlogs = await Blog.find({});
+    const blogToUpdateObject = savedBlogs[0];
+    const blogToUpdate = blogToUpdateObject.toJSON();
+    blogToUpdate.title = 'updated Title';
+    blogToUpdate.author = 'udpated Author';
+
+    await api
+      // @ts-ignore
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send(blogToUpdate)
+      .expect(200);
+
+    // @ts-ignore
+    const updatedBlogObject = await Blog.findById(blogToUpdate.id);
+    const updatedBlog = updatedBlogObject?.toJSON();
+    expect(updatedBlog).not.toBeNull();
+    expect(updatedBlog?.title).toEqual(blogToUpdate.title);
+    expect(updatedBlog?.author).toEqual(blogToUpdate.author);
   });
 });
