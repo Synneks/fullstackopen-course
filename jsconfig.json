@@ -6,7 +6,7 @@
     "jsx": "preserve",
     "strictNullChecks": true,
     "strictFunctionTypes": true,
-    "checkJs": true
+    "checkJs": false
   },
   "exclude": ["node_modules", "**/node_modules/*"]
 }
