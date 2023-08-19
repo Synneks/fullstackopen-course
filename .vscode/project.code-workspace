@@ -1,0 +1,42 @@
+{
+  "folders": [
+    {
+      "name": "part1",
+      "path": "../part1"
+    },
+    {
+      "name": "part2-data-for-countries",
+      "path": "../part2-data-for-countries"
+    },
+    {
+      "name": "part2-phonebook-frontend",
+      "path": "../part2-phonebook-frontend"
+    },
+    {
+      "name": "part3-phonebook-backend",
+      "path": "../part3-phonebook-backend"
+    },
+    {
+      "name": "part2-notes-frontend",
+      "path": "../part2-notes-frontend"
+    },
+    {
+      "name": "part3-notes-backend",
+      "path": "../part3-notes-backend"
+    },
+    {
+      "name": "part4-blog-backend",
+      "path": "../part4-blog-backend"
+    }
+  ],
+  "settings": {
+    "jest.disabledWorkspaceFolders": [
+      "fullstackopen-course",
+      "part2-data-for-countries",
+      "part3-phonebook-backend",
+      "part2-phonebook-frontend",
+      "part2-notes-frontend",
+      "part1"
+    ]
+  }
+}
