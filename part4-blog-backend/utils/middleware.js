@@ -24,4 +24,16 @@ const errorHandler = (error, request, response, next) => {
   next(error);
 };
 
-module.exports = { requestLogger, errorHandler, unknownEndpoint };
+const tokenExtractor = (request, response, next) => {
+  const authHeader = request.headers.authorization;
+  const token = authHeader && authHeader.split(' ')[1];
+  request.token = token;
+  next();
+};
+
+module.exports = {
+  requestLogger,
+  errorHandler,
+  unknownEndpoint,
+  tokenExtractor,
+};
