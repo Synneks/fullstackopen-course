@@ -1,3 +1,6 @@
+const jwt = require('jsonwebtoken');
+const config = require('./config');
+
 const requestLogger = (request, response, next) => {
   console.log('Method:', request.method);
   console.log('Path:  ', request.path);
@@ -31,9 +34,21 @@ const tokenExtractor = (request, response, next) => {
   next();
 };
 
+const userExtractor = (request, response, next) => {
+  const decodedToken = jwt.verify(request.token, config.SECRET);
+
+  if (!decodedToken.id) {
+    return response.status(401).json({ error: 'invalid token' });
+  }
+
+  request.user = decodedToken ? decodedToken : null;
+  next();
+};
+
 module.exports = {
   requestLogger,
   errorHandler,
   unknownEndpoint,
   tokenExtractor,
+  userExtractor,
 };
