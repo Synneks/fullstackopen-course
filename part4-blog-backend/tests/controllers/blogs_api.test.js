@@ -2,34 +2,14 @@ const mongoose = require('mongoose');
 const supertest = require('supertest');
 const app = require('../../app');
 const Blog = require('../../models/blog');
-const blogsRouter = require('../../controllers/blogs_api');
+const helper = require('./../test_utils/test_helper');
 
 const api = supertest(app);
 
-const initialBlogs = [
-  {
-    title: 'title',
-    author: 'author',
-    url: 'url',
-    likes: 1,
-  },
-  {
-    title: 'second',
-    author: 'second author',
-    url: 'second url',
-    likes: 2,
-  },
-];
-
 beforeEach(async () => {
+  const user = await helper.initDefaultUser();
   await Blog.deleteMany({});
-
-  // eslint-disable-next-line no-restricted-syntax
-  for (const blog of initialBlogs) {
-    const blogObject = new Blog(blog);
-    // eslint-disable-next-line no-await-in-loop
-    await blogObject.save();
-  }
+  await helper.initDefaultBlogsToUser(user);
 });
 
 afterAll(async () => {
@@ -38,16 +18,24 @@ afterAll(async () => {
 
 describe('fetching blogs', () => {
   test('return all blogs as json', async () => {
-    await api
+    const token = await helper.createTokenForUser('test');
+
+    const response = await api
       .get('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
       .expect(200)
       .expect('Content-Type', /application\/json/);
+
+    expect(response.body).toHaveLength(await Blog.count({}));
   });
 });
 
 describe('blogs schema', () => {
   test('the unique identifier property of the blog posts is named id', async () => {
-    const apiResult = await api.get('/api/blogs');
+    const token = await helper.createTokenForUser('test');
+    const apiResult = await api
+      .get('/api/blogs')
+      .set('Authorization', `Bearer ${token}`);
 
     const blogs = JSON.parse(apiResult.text);
 
@@ -59,6 +47,8 @@ describe('blogs schema', () => {
 
 describe('saving blogs', () => {
   test('saving a new blog', async () => {
+    const token = await helper.createTokenForUser('test');
+
     const newBlog = {
       title: 'TSAONGAF',
       author: 'MMANSON',
@@ -66,7 +56,11 @@ describe('saving blogs', () => {
       likes: 100,
     };
 
-    await api.post('/api/blogs').send(newBlog).expect(201);
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(201);
 
     const savedBlogs = await Blog.find({ title: 'TSAONGAF' });
 
@@ -75,13 +69,18 @@ describe('saving blogs', () => {
   });
 
   test('saving a blog without likes defaults to 0', async () => {
+    const token = await helper.createTokenForUser('test');
     const newBlog = {
       title: 'TSAONGAF',
       author: 'MMANSON',
       url: 'mmanson.com',
     };
 
-    await api.post('/api/blogs').send(newBlog).expect(201);
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(201);
 
     const savedBlogs = await Blog.find({ title: 'TSAONGAF' });
 
@@ -90,37 +89,56 @@ describe('saving blogs', () => {
   });
 
   test('saving a blog without title should return 400', async () => {
+    const token = await helper.createTokenForUser('test');
     const newBlog = {
       author: 'MMANSON',
       url: 'mmanson.com',
     };
 
-    await api.post('/api/blogs').send(newBlog).expect(400);
+    await api
+      .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
+      .send(newBlog)
+      .expect(400);
   });
 
   test('saving a blog without url should return 400', async () => {
+    const token = await helper.createTokenForUser('test');
     const newBlog = {
       title: 'test',
       author: 'MMANSON',
     };
 
-    await api.post('/api/blogs').send(newBlog).expect(400);
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(400);
   });
 });
 
 describe('deleting blogs', () => {
   test('deleting a blog works', async () => {
+    const token = await helper.createTokenForUser('test');
     const savedBlogs = await Blog.find({});
     const blogToDelete = savedBlogs[0];
-    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(204);
   });
   test('deleting a blog that does not exist', async () => {
-    await api.delete(`/api/blogs/fakeId}`).expect(400);
+    const token = await helper.createTokenForUser('test');
+    await api
+      .delete(`/api/blogs/fakeId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(400);
   });
 });
 
 describe('updating blogs', () => {
   test('updating a blog works', async () => {
+    const token = await helper.createTokenForUser('test');
     const savedBlogs = await Blog.find({});
     const blogToUpdateObject = savedBlogs[0];
     const blogToUpdate = blogToUpdateObject.toJSON();
@@ -128,12 +146,11 @@ describe('updating blogs', () => {
     blogToUpdate.author = 'udpated Author';
 
     await api
-      // @ts-ignore
       .put(`/api/blogs/${blogToUpdate.id}`)
       .send(blogToUpdate)
+      .set('Authorization', `Bearer ${token}`)
       .expect(200);
 
-    // @ts-ignore
     const updatedBlogObject = await Blog.findById(blogToUpdate.id);
     const updatedBlog = updatedBlogObject?.toJSON();
     expect(updatedBlog).not.toBeNull();

@@ -10,8 +10,6 @@ const middleware = require('./utils/middleware');
 
 const app = express();
 
-console.log(config.MONGO_DB_URI);
-
 mongoose
   .connect(config.MONGO_DB_URI || '')
   .then(() => {

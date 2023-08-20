@@ -37,7 +37,7 @@ blogsRouter.delete('/:id', async (request, response) => {
       .json({ error: 'only the creator of the blog can delete the blog' });
   }
 
-  await blogToDelete.remove();
+  await Blog.deleteOne(blogToDelete._id);
   response.status(204).end();
 });
 
