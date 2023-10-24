@@ -27,6 +27,9 @@
     {
       "name": "part4-blog-backend",
       "path": "../part4-blog-backend"
+    },
+    {
+      "path": "../part5-blog-frontend"
     }
   ],
   "settings": {
