@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import Blog from './components/Blog';
 import blogService from './services/blogs';
 import loginService from './services/login';
+import Notification from './components/Notification';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
+  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
     const loggedUserJson = window.localStorage.getItem('loggedBlogappUser');
@@ -26,9 +28,17 @@ const App = () => {
       setUser(user);
       setUsername('');
       setPassword('');
+      setNotification({ message: `Hi, ${user.username}` });
+      setTimeout(() => {
+        setNotification(null);
+      }, 3000);
       blogService.getAll().then((blogs) => setBlogs(blogs));
     } catch (exception) {
-      console.warn(exception);
+      setNotification({ message: 'log in failed', error: true });
+      setTimeout(() => {
+        setNotification(null);
+      }, 3000);
+      setPassword('');
     }
   };
 
@@ -36,6 +46,10 @@ const App = () => {
     window.localStorage.removeItem('loggedBlogappUser');
     setUser(null);
     setBlogs([]);
+    setNotification({ message: 'logged out' });
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000);
   };
 
   const loginForm = () => (
@@ -71,7 +85,11 @@ const App = () => {
     const formData = new FormData(form);
     const formJson = Object.fromEntries(formData.entries());
     await blogService.create(formJson);
-    blogService.getAll().then((blogs) => setBlogs(blogs));
+    await blogService.getAll().then((blogs) => setBlogs(blogs));
+    setNotification({ message: 'new blog added' });
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000);
   };
 
   const createBlogForm = () => (
@@ -98,7 +116,7 @@ const App = () => {
   return (
     <div>
       <h1>blogs</h1>
-
+      <Notification notification={notification} />
       {!user && loginForm()}
       {user && (
         <div>
