@@ -10,14 +10,11 @@ const App = () => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
-  }, []);
-
-  useEffect(() => {
     const loggedUserJson = window.localStorage.getItem('loggedBlogappUser');
     if (loggedUserJson) {
       const user = JSON.parse(loggedUserJson);
       setUser(user);
+      blogService.getAll().then((blogs) => setBlogs(blogs));
     }
   }, []);
 
@@ -29,9 +26,16 @@ const App = () => {
       setUser(user);
       setUsername('');
       setPassword('');
+      blogService.getAll().then((blogs) => setBlogs(blogs));
     } catch (exception) {
       console.warn(exception);
     }
+  };
+
+  const logout = () => {
+    window.localStorage.removeItem('loggedBlogappUser');
+    setUser(null);
+    setBlogs([]);
   };
 
   const loginForm = () => (
@@ -39,24 +43,54 @@ const App = () => {
       <h2>Log in to application</h2>
       <form onSubmit={handleLogin}>
         <div>
-          username
+          username:
           <input
             type="text"
             value={username}
-            name="Username"
+            name="username"
             onChange={({ target }) => setUsername(target.value)}
           />
         </div>
         <div>
-          password
+          password:
           <input
             type="password"
             value={password}
-            name="Password"
+            name="password"
             onChange={({ target }) => setPassword(target.value)}
           />
         </div>
         <button type="submit"> login </button>
+      </form>
+    </div>
+  );
+
+  const handleCreateForm = async (event) => {
+    event.preventDefault();
+    const form = event.target;
+    const formData = new FormData(form);
+    const formJson = Object.fromEntries(formData.entries());
+    await blogService.create(formJson);
+    blogService.getAll().then((blogs) => setBlogs(blogs));
+  };
+
+  const createBlogForm = () => (
+    <div>
+      <h2>Create Blog</h2>
+      <form onSubmit={handleCreateForm}>
+        <div>
+          title:
+          <input type="text" name="title" />
+        </div>
+        <div>
+          author:
+          <input type="text" name="author" />
+        </div>
+        <div>
+          url:
+          <input type="text" name="url" />
+        </div>
+        <button type="submit"> create </button>
       </form>
     </div>
   );
@@ -68,7 +102,11 @@ const App = () => {
       {!user && loginForm()}
       {user && (
         <div>
-          <h2>Logged in as {user.username}</h2>
+          <h2>
+            Logged in as {user.username}
+            <button onClick={logout}>logout</button>
+          </h2>
+          {createBlogForm()}
         </div>
       )}
 
