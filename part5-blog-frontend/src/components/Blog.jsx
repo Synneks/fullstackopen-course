@@ -7,6 +7,16 @@ const Blog = ({ blog, handleBlogLike, handleDeleteBlog }) => {
     border: '1px solid',
   };
 
+  const onDelete = () => {
+    if (
+      window.confirm(
+        `Do you really want to delete ${blog.title} by ${blog.author}?`
+      ) === true
+    ) {
+      handleDeleteBlog(blog.id);
+    }
+  };
+
   return (
     <div className="blog" style={blogStyle}>
       <b>{blog.title}</b>
@@ -25,13 +35,7 @@ const Blog = ({ blog, handleBlogLike, handleDeleteBlog }) => {
         <div>Url: {blog.url}</div>
         <div>Created by: {blog.user.username || blog.createdBy}</div>
         <div>
-          <button
-            onClick={() => {
-              handleDeleteBlog(blog.id);
-            }}
-          >
-            Delete Blog
-          </button>
+          <button onClick={onDelete}>Delete Blog</button>
         </div>
       </Togglable>
     </div>
