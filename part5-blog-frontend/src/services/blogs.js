@@ -18,7 +18,8 @@ const getAll = () => {
 
 const create = async (newBlog) => {
   const config = { headers: { Authorization: getToken() } };
-  await axios.post(baseUrl, newBlog, config);
+  const request = axios.post(baseUrl, newBlog, config);
+  return request.then((response) => response.data);
 };
 
 export default { getAll, create };

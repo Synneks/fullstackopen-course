@@ -4,11 +4,11 @@ import blogService from './services/blogs';
 import loginService from './services/login';
 import Notification from './components/Notification';
 import Togglable from './components/Togglable';
+import BlogForm from './components/BlogForm';
+import LoginForm from './components/LoginForm';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
   const [notification, setNotification] = useState(null);
 
@@ -21,111 +21,83 @@ const App = () => {
     }
   }, []);
 
-  const handleLogin = async (event) => {
-    event.preventDefault();
-    try {
-      const user = await loginService.login({ username, password });
-      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user));
-      setUser(user);
-      setUsername('');
-      setPassword('');
-      setNotification({ message: `Hi, ${user.username}` });
-      setTimeout(() => {
-        setNotification(null);
-      }, 3000);
-      blogService.getAll().then((blogs) => setBlogs(blogs));
-    } catch (exception) {
-      setNotification({ message: 'log in failed', error: true });
-      setTimeout(() => {
-        setNotification(null);
-      }, 3000);
-      setPassword('');
-    }
-  };
-
   const logout = () => {
     window.localStorage.removeItem('loggedBlogappUser');
     setUser(null);
     setBlogs([]);
-    setNotification({ message: 'logged out' });
+    setNotification({ message: 'Logged out' });
     setTimeout(() => {
       setNotification(null);
     }, 3000);
+  };
+
+  const handleLogin = (credentials) => {
+    loginService
+      .login(credentials)
+      .then((user) => {
+        window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user));
+        setUser(user);
+        setNotification({ message: `Hi, ${user.username}` });
+        setTimeout(() => {
+          setNotification(null);
+        }, 3000);
+        blogService.getAll().then((blogs) => setBlogs(blogs));
+      })
+      .catch((exception) => {
+        setNotification({ message: 'Log in failed', error: true });
+        console.error(exception);
+        setTimeout(() => {
+          setNotification(null);
+        }, 3000);
+      });
+  };
+
+  const handleCreateForm = (formJson) => {
+    blogService
+      .create(formJson)
+      .then((returnedBlog) => {
+        setBlogs(blogs.concat(returnedBlog));
+        setNotification({
+          message: `Blog added: ${returnedBlog.title} by ${returnedBlog.author}`,
+        });
+        setTimeout(() => {
+          setNotification(null);
+        }, 3000);
+      })
+      .catch((exception) => {
+        setNotification({
+          message: 'Something failed at saving the blog',
+          error: true,
+        });
+        console.error(exception);
+        setTimeout(() => {
+          setNotification(null);
+        }, 3000);
+      });
   };
 
   const loginForm = () => (
     <Togglable buttonLabel="Log in">
-      <div>
-        <h2>Log in to application</h2>
-        <form onSubmit={handleLogin}>
-          <div>
-            Username:
-            <input
-              type="text"
-              value={username}
-              name="username"
-              onChange={({ target }) => setUsername(target.value)}
-            />
-          </div>
-          <div>
-            Password:
-            <input
-              type="password"
-              value={password}
-              name="password"
-              onChange={({ target }) => setPassword(target.value)}
-            />
-          </div>
-          <button type="submit">Log In</button>
-        </form>
-      </div>
+      <LoginForm handleLogin={handleLogin} />
     </Togglable>
   );
 
-  const handleCreateForm = async (event) => {
-    event.preventDefault();
-    const form = event.target;
-    const formData = new FormData(form);
-    const formJson = Object.fromEntries(formData.entries());
-    await blogService.create(formJson);
-    await blogService.getAll().then((blogs) => setBlogs(blogs));
-    setNotification({ message: 'new blog added' });
-    setTimeout(() => {
-      setNotification(null);
-    }, 3000);
-  };
-
   const createBlogForm = () => (
-    <div>
-      <h2>Create Blog</h2>
-      <form onSubmit={handleCreateForm}>
-        <div>
-          title:
-          <input type="text" name="title" />
-        </div>
-        <div>
-          author:
-          <input type="text" name="author" />
-        </div>
-        <div>
-          url:
-          <input type="text" name="url" />
-        </div>
-        <button type="submit"> create </button>
-      </form>
-    </div>
+    <Togglable buttonLabel="Create Blog">
+      <BlogForm handleCreateForm={handleCreateForm} />
+    </Togglable>
   );
 
   return (
     <div>
-      <h1>blogs</h1>
+      <h1>Blogs</h1>
       <Notification notification={notification} />
       {!user && loginForm()}
       {user && (
         <div>
           <h2>
             Logged in as {user.username}
-            <button onClick={logout}>logout</button>
+            <button onClick={logout}>Log out</button>
           </h2>
           {createBlogForm()}
         </div>

@@ -5,7 +5,6 @@ const NoteForm = ({ createNote }) => {
 
   const onSubmit = (event) => {
     event.preventDefault();
-    console.log(newNote);
     createNote({
       content: newNote,
       important: true,
