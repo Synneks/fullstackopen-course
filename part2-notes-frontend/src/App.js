@@ -73,9 +73,11 @@ const App = () => {
   };
 
   const noteForm = () => {
-    <Togglable buttonLabel="new note">
-      <NoteForm onSubmit={addNote} />
-    </Togglable>;
+    return (
+      <Togglable buttonLabel="new note">
+        <NoteForm createNote={addNote} />
+      </Togglable>
+    );
   };
 
   const loginForm = () => {
