@@ -1,17 +1,18 @@
-import { useState, useEffect } from 'react';
-import Footer from './components/Footer';
-import Note from './components/Note';
+import { useEffect, useState } from 'react';
 import Notification from './components/Notification';
-import noteService from './services/notes';
 import loginService from './services/login';
+import noteService from './services/notes';
+import LoginForm from './components/LoginForm';
+import Togglable from './components/Togglable';
+import NoteForm from './components/NoteForm';
+import Note from './components/Note';
+import Footer from './components/Footer';
 
 const App = () => {
   const [notes, setNotes] = useState([]);
-  const [newNote, setNewNote] = useState('');
   const [showAll, setShowAll] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
   const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -29,21 +30,10 @@ const App = () => {
     }
   }, []);
 
-  const addNote = (event) => {
-    event.preventDefault();
-    const noteObject = {
-      content: newNote,
-      important: Math.random() > 0.5,
-    };
-
+  const addNote = (noteObject) => {
     noteService.create(noteObject).then((returnedNote) => {
       setNotes(notes.concat(returnedNote));
-      setNewNote('');
     });
-  };
-
-  const handleNoteChange = (event) => {
-    setNewNote(event.target.value);
   };
 
   const notesToShow = showAll ? notes : notes.filter((note) => note.important);
@@ -68,18 +58,12 @@ const App = () => {
       });
   };
 
-  const handleLogin = async (event) => {
-    event.preventDefault();
+  const handleLogin = async (credentials) => {
     try {
-      const user = await loginService.login({
-        username,
-        password,
-      });
+      const user = await loginService.login(credentials);
       window.localStorage.setItem('loggedNoteappUser', JSON.stringify(user));
       noteService.setToken(user.token);
       setUser(user);
-      setUsername('');
-      setPassword('');
     } catch (exception) {
       setErrorMessage('Wrong credentials');
       setTimeout(() => {
@@ -88,36 +72,23 @@ const App = () => {
     }
   };
 
-  const loginForm = () => (
-    <form onSubmit={handleLogin}>
-      <div>
-        username
-        <input
-          type="text"
-          value={username}
-          name="Username"
-          onChange={({ target }) => setUsername(target.value)}
-        />
-      </div>
-      <div>
-        password
-        <input
-          type="password"
-          value={password}
-          name="Password"
-          onChange={({ target }) => setPassword(target.value)}
-        />
-      </div>
-      <button type="submit"> login </button>
-    </form>
-  );
+  const noteForm = () => {
+    <Togglable buttonLabel="new note">
+      <NoteForm onSubmit={addNote} />
+    </Togglable>;
+  };
 
-  const noteForm = () => (
-    <form onSubmit={addNote}>
-      <input value={newNote} onChange={handleNoteChange} />
-      <button type="submit">save</button>
-    </form>
-  );
+  const loginForm = () => {
+    return (
+      <Togglable buttonLabel="log in">
+        <LoginForm
+          handleLogin={handleLogin}
+          username={username}
+          handleUsernameChange={(username) => setUsername(username)}
+        />
+      </Togglable>
+    );
+  };
 
   return (
     <div>
@@ -126,7 +97,7 @@ const App = () => {
       {!user && loginForm()}
       {user && (
         <div>
-          <p>{user.name} logged in </p>
+          <p>{user.name} logged in</p>
           {noteForm()}
         </div>
       )}
@@ -137,15 +108,13 @@ const App = () => {
         </button>
       </div>
       <ul>
-        <ul>
-          {notesToShow.map((note) => (
-            <Note
-              key={note.id}
-              note={note}
-              toggleImportance={() => toggleImportance(note.id)}
-            />
-          ))}
-        </ul>
+        {notesToShow.map((note) => (
+          <Note
+            key={note.id}
+            note={note}
+            toggleImportance={() => toggleImportance(note.id)}
+          />
+        ))}
       </ul>
 
       <Footer />
