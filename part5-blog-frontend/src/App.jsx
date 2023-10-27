@@ -17,7 +17,9 @@ const App = () => {
     if (loggedUserJson) {
       const user = JSON.parse(loggedUserJson);
       setUser(user);
-      blogService.getAll().then((blogs) => setBlogs(blogs));
+      blogService
+        .getAll()
+        .then((blogs) => setBlogs(blogs.sort((a, b) => b.likes - a.likes)));
     }
   }, []);
 
@@ -57,7 +59,7 @@ const App = () => {
       .create(formJson)
       .then((returnedBlog) => {
         returnedBlog.createdBy = user.username;
-        setBlogs(blogs.concat(returnedBlog));
+        setBlogs(blogs.concat(returnedBlog).sort((a, b) => b.likes - a.likes));
         setNotification({
           message: `Blog added: ${returnedBlog.title} by ${returnedBlog.author}`,
         });
@@ -80,9 +82,9 @@ const App = () => {
   const handleBlogLike = (likedBlog) => {
     likedBlog.likes++;
     setBlogs((prevBlogs) =>
-      prevBlogs.map((blog) =>
-        blog.id === likedBlog.id ? { ...likedBlog } : blog
-      )
+      prevBlogs
+        .map((blog) => (blog.id === likedBlog.id ? { ...likedBlog } : blog))
+        .sort((a, b) => b.likes - a.likes)
     );
     blogService.update(likedBlog);
   };
