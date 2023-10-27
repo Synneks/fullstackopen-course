@@ -45,9 +45,9 @@ const App = () => {
         }, 3000);
         blogService.getAll().then((blogs) => setBlogs(blogs));
       })
-      .catch((exception) => {
+      .catch((error) => {
         setNotification({ message: 'Log in failed', error: true });
-        console.error(exception);
+        console.error(error);
         setTimeout(() => {
           setNotification(null);
         }, 3000);
@@ -67,12 +67,12 @@ const App = () => {
           setNotification(null);
         }, 3000);
       })
-      .catch((exception) => {
+      .catch((error) => {
         setNotification({
           message: 'Something failed at saving the blog',
           error: true,
         });
-        console.error(exception);
+        console.error(error);
         setTimeout(() => {
           setNotification(null);
         }, 3000);
@@ -87,6 +87,30 @@ const App = () => {
         .sort((a, b) => b.likes - a.likes)
     );
     blogService.update(likedBlog);
+  };
+
+  const handleDeleteBlog = (blogId) => {
+    blogService
+      .deleteById(blogId)
+      .then((response) => {
+        setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog.id !== blogId));
+        setNotification({
+          message: 'Blog deleted!',
+        });
+        setTimeout(() => {
+          setNotification(null);
+        }, 3000);
+      })
+      .catch((error) => {
+        setNotification({
+          message: error.response.data.error,
+          error: true,
+        });
+        console.error(error.response.data.error);
+        setTimeout(() => {
+          setNotification(null);
+        }, 3000);
+      });
   };
 
   const loginForm = () => (
@@ -117,7 +141,12 @@ const App = () => {
       )}
 
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} handleBlogLike={handleBlogLike} />
+        <Blog
+          key={blog.id}
+          blog={blog}
+          handleBlogLike={handleBlogLike}
+          handleDeleteBlog={handleDeleteBlog}
+        />
       ))}
     </div>
   );

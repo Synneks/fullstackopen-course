@@ -4,6 +4,7 @@ const BlogForm = ({ handleCreateForm }) => {
     const form = event.target;
     const formData = new FormData(form);
     const formJson = Object.fromEntries(formData.entries());
+    form.reset();
     handleCreateForm(formJson);
   };
 

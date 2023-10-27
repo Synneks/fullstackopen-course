@@ -22,10 +22,15 @@ const create = (newBlog) => {
   return request.then((response) => response.data);
 };
 
-const update = async (likedBlog) => {
+const update = (likedBlog) => {
   const config = { headers: { Authorization: getToken() } };
   const request = axios.put(`${baseUrl}/${likedBlog.id}`, likedBlog, config);
   return request.then((response) => response.data);
 };
 
-export default { getAll, create, update };
+const deleteById = (blogId) => {
+  const config = { headers: { Authorization: getToken() } };
+  return axios.delete(`${baseUrl}/${blogId}`, config);
+};
+
+export default { getAll, create, update, deleteById };
