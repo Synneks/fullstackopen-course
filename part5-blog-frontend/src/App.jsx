@@ -56,6 +56,7 @@ const App = () => {
     blogService
       .create(formJson)
       .then((returnedBlog) => {
+        returnedBlog.createdBy = user.username;
         setBlogs(blogs.concat(returnedBlog));
         setNotification({
           message: `Blog added: ${returnedBlog.title} by ${returnedBlog.author}`,
@@ -104,7 +105,7 @@ const App = () => {
       )}
 
       {blogs.map((blog) => (
-        <Blog blog={blog} />
+        <Blog key={blog.id} blog={blog} />
       ))}
     </div>
   );
