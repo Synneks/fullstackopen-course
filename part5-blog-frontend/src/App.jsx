@@ -77,6 +77,16 @@ const App = () => {
       });
   };
 
+  const handleBlogLike = (likedBlog) => {
+    likedBlog.likes++;
+    setBlogs((prevBlogs) =>
+      prevBlogs.map((blog) =>
+        blog.id === likedBlog.id ? { ...likedBlog } : blog
+      )
+    );
+    blogService.update(likedBlog);
+  };
+
   const loginForm = () => (
     <Togglable buttonLabel="Log in">
       <LoginForm handleLogin={handleLogin} />
@@ -105,7 +115,7 @@ const App = () => {
       )}
 
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} handleBlogLike={handleBlogLike} />
       ))}
     </div>
   );

@@ -16,10 +16,16 @@ const getAll = () => {
   return request.then((response) => response.data);
 };
 
-const create = async (newBlog) => {
+const create = (newBlog) => {
   const config = { headers: { Authorization: getToken() } };
   const request = axios.post(baseUrl, newBlog, config);
   return request.then((response) => response.data);
 };
 
-export default { getAll, create };
+const update = async (likedBlog) => {
+  const config = { headers: { Authorization: getToken() } };
+  const request = axios.put(`${baseUrl}/${likedBlog.id}`, likedBlog, config);
+  return request.then((response) => response.data);
+};
+
+export default { getAll, create, update };
