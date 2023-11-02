@@ -29,7 +29,7 @@ const Blog = ({ blog, handleBlogLike, handleDeleteBlog }) => {
               handleBlogLike(blog);
             }}
           >
-            like
+            Like
           </button>
         </div>
         <div>Url: {blog.url}</div>
