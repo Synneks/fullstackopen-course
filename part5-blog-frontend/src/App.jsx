@@ -54,7 +54,7 @@ const App = () => {
       });
   };
 
-  const handleCreateForm = (formJson) => {
+  const handleCreateBlog = (formJson) => {
     blogService
       .create(formJson)
       .then((returnedBlog) => {
@@ -121,7 +121,7 @@ const App = () => {
 
   const createBlogForm = () => (
     <Togglable buttonLabel="Create Blog">
-      <BlogForm handleCreateForm={handleCreateForm} />
+      <BlogForm handleCreateBlog={handleCreateBlog} />
     </Togglable>
   );
 
