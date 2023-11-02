@@ -1,3 +1,4 @@
+import PropType from 'prop-types';
 const LoginForm = ({ handleLogin }) => {
   const onSubmit = (event) => {
     event.preventDefault();
@@ -24,5 +25,8 @@ const LoginForm = ({ handleLogin }) => {
     </div>
   );
 };
+
+LoginForm.displayName = 'LoginForm';
+LoginForm.propTypes = { handleLogin: PropType.func.isRequired };
 
 export default LoginForm;
