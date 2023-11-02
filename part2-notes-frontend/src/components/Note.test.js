@@ -33,7 +33,7 @@ test('should render content (querySelector)', () => {
   expect(li).toHaveTextContent(note.content);
 });
 
-test('should render content (querySelector)', async () => {
+test('should click not important button)', async () => {
   const note = {
     content: 'Component testing is done with react-testing-library',
     important: true,
