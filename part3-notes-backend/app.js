@@ -12,7 +12,7 @@ const mongoose = require('mongoose');
 
 mongoose.set('strictQuery', false);
 
-console.log(config.MONGO_DB_URI);
+logger.info('connecting to', config.MONGO_DB_URI);
 mongoose
   .connect(config.MONGO_DB_URI || '')
   .then(() => {
@@ -22,7 +22,6 @@ mongoose
     logger.error('error connecting to MongoDB:', error.message);
   });
 
-logger.info('connecting to', config.MONGO_DB_URI);
 app.use(cors());
 app.use(express.static('build'));
 app.use(express.json());
@@ -31,6 +30,10 @@ app.use(middleware.requestLogger);
 app.use('/api/notes', notesRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/login', loginRouter);
+if (config.ENV === 'test') {
+  const testingRouter = require('./controllers/testing');
+  app.use('/api/testing', testingRouter);
+}
 
 app.use(middleware.errorHandler);
 app.use(middleware.unknownEndpoint);
