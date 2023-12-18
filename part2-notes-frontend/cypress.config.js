@@ -5,5 +5,10 @@ export default defineConfig({
     setupNodeEvents(on, config) {
       // implement node event listeners here
     },
+    baseUrl: 'http://localhost:5173',
+    env: {
+      // set environment variables here
+      BACKEND: 'http://localhost:3001/api',
+    },
   },
 });
