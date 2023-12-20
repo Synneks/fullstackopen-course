@@ -6,7 +6,7 @@ describe('Note app', function () {
       username: 'test',
       password: 'testpw',
     };
-    cy.request('POST',`${Cypress.env('BACKEND')}/users`, testUser);
+    cy.request('POST', `${Cypress.env('BACKEND')}/users`, testUser);
     cy.visit('');
   });
 
@@ -42,10 +42,7 @@ describe('Note app', function () {
 
   describe('when logged in', function () {
     beforeEach(function () {
-      cy.contains('log in').click();
-      cy.get('#username').type('test');
-      cy.get('#password').type('testpw');
-      cy.get('#login-button').click();
+      cy.login({ username: 'test', password: 'testpw' });
     });
 
     it('a new note can be created', function () {
@@ -57,9 +54,10 @@ describe('Note app', function () {
 
     describe('and a note exists', function () {
       beforeEach(function () {
-        cy.contains('new note').click();
-        cy.get('input').type('another note cypress');
-        cy.contains('save').click();
+        cy.createNote({
+          content: 'another note cypress',
+          important: true,
+        });
       });
 
       it('it can be made not important', function () {
